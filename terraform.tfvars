@@ -1,6 +1,6 @@
 name                                 = "splunk-search-head"
 image_id                             = "ami-0220d79f3f480ecf5"
-instance_type                        = "t3.small"
+instance_type                        = "m5.large"
 key_name                             = "aws-helpag"
 instance_initiated_shutdown_behavior = "stop"
 monitoring                           = true
@@ -14,7 +14,7 @@ launch_template_name                 = "splunk-search-head-launch-template"
 vpc_zone_identifier = [
   "subnet-02b2facb986b86601",
   "subnet-004e12cfcbc98b621",
-  "subnet-0c846e5406c9d6146",
+  "subnet-0e9272cbed90dc89c",
 ]
 
 health_check_type         = "EC2"
