@@ -21,7 +21,7 @@ health_check_type         = "EC2"
 health_check_grace_period = 900
 min_size                  = 0
 max_size                  = 3
-desired_capacity          = 0
+desired_capacity          = 3
 heartbeat_timeout         = 600
 
 tags = {
