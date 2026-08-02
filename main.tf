@@ -1,11 +1,18 @@
 module "splunk_search_head" {
     source = "./modules/Launch-Template"
-    image_id = var.image_id
-    instance_type = var.instance_type
-    key_name = var.key_name
+
+    name                                 = var.name
+    image_id                             = var.image_id
+    instance_type                        = var.instance_type
+    key_name                             = var.key_name
     instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
-    monitoring = true
-    vpc_security_group_ids = ["sg-02d2ebc3b9af4f158"]
+    monitoring                           = var.monitoring
+    vpc_security_group_ids               = var.vpc_security_group_ids
+    iam_instance_profile                 = var.iam_instance_profile
+    root_device_name                     = var.root_device_name
+    root_volume_size                     = var.root_volume_size
+    tags                                 = var.tags
+
     user_data = filebase64("${path.module}/splunk-search-head.sh")
 }
 module "splunk_search_head_autoscaling_group" {
