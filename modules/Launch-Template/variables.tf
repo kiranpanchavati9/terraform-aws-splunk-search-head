@@ -1,7 +1,6 @@
 variable "name" {
   description = "Name prefix for the launch template and instances"
   type        = string
-  default     = "splunk-search-head"
 }
 
 variable "image_id" {
@@ -22,13 +21,11 @@ variable "key_name" {
 variable "instance_initiated_shutdown_behavior" {
   description = "Behaviour on in-guest shutdown: stop or terminate"
   type        = string
-  default     = "stop"
 }
 
 variable "monitoring" {
   description = "Enable detailed CloudWatch monitoring"
   type        = bool
-  default     = true
 }
 
 variable "vpc_security_group_ids" {
@@ -44,23 +41,19 @@ variable "user_data" {
 variable "iam_instance_profile" {
   description = "IAM instance profile name"
   type        = string
-  default     = "SplunkSearchHead"
 }
 
 variable "root_device_name" {
   description = "Root device name, /dev/xvda on Amazon Linux, /dev/sda1 on RHEL"
   type        = string
-  default     = "/dev/xvda"
 }
 
 variable "root_volume_size" {
   description = "Root volume size in GB"
   type        = number
-  default     = 100
 }
 
 variable "tags" {
   description = "Tags applied to instances and volumes"
   type        = map(string)
-  default     = {}
 }
