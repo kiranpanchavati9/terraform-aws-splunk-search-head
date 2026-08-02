@@ -1,0 +1,30 @@
+name                                 = "splunk-search-head"
+image_id                             = "ami-0220d79f3f480ecf5"
+instance_type                        = "t3.small"
+key_name                             = "aws-helpag"
+instance_initiated_shutdown_behavior = "stop"
+monitoring                           = true
+vpc_security_group_ids               = ["sg-02d2ebc3b9af4f158"]
+user_data                            = ""
+iam_instance_profile                 = "SplunkSearchHead"
+root_device_name                     = "/dev/xvda"
+root_volume_size                     = 100
+launch_template_name                 = "splunk-search-head-launch-template"
+
+vpc_zone_identifier = [
+  "subnet-02b2facb986b86601",
+  "subnet-004e12cfcbc98b621",
+  "subnet-0c846e5406c9d6146",
+]
+
+health_check_type         = "EC2"
+health_check_grace_period = 900
+min_size                  = 3
+max_size                  = 3
+desired_capacity          = 3
+heartbeat_timeout         = 600
+
+tags = {
+  Role        = "search-head"
+  Environment = "dev"
+}
