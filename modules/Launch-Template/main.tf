@@ -27,6 +27,19 @@ resource "aws_launch_template" "splunk_search_head" {
     }
   }
 
+  block_device_mappings {
+    device_name = var.splunk_device_name
+
+    ebs {
+      volume_size           = var.splunk_volume_size
+      volume_type           = "gp3"
+      iops                  = var.iops
+      throughput            = var.throughput
+      encrypted             = true
+      delete_on_termination = true
+    }
+  }
+
   metadata_options {
     http_tokens                 = "required"
     http_endpoint               = "enabled"
@@ -35,12 +48,12 @@ resource "aws_launch_template" "splunk_search_head" {
 
   tag_specifications {
     resource_type = "instance"
-    tags = merge(var.tags, { Name = var.name })
+    tags          = merge(var.tags, { Name = var.name })
   }
 
   tag_specifications {
     resource_type = "volume"
-    tags = merge(var.tags, { Name = "${var.name}-root" })
+    tags          = merge(var.tags, { Name = "${var.name}-root" })
   }
 
   lifecycle {

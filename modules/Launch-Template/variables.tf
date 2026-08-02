@@ -57,3 +57,23 @@ variable "tags" {
   description = "Tags applied to instances and volumes"
   type        = map(string)
 }
+
+variable "splunk_device_name" {
+  description = "Splunk device name, /dev/xvdb on Amazon Linux, /dev/sdb1 on RHEL"
+  type        = string
+}
+
+variable "splunk_volume_size" {
+  description = "Splunk volume size in GB"
+  type        = number
+}
+
+variable "iops" {
+  description = "IOPS for the splunk volume"
+  type        = number
+}
+
+variable "throughput" {
+  description = "Throughput for the splunk volume"
+  type        = number
+}

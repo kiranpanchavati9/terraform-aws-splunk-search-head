@@ -23,6 +23,10 @@ min_size                  = 0
 max_size                  = 3
 desired_capacity          = 3
 heartbeat_timeout         = 600
+iops                      = 6000
+throughput                = 250
+splunk_device_name        = "/dev/xvdb"
+splunk_volume_size        = 100
 
 tags = {
   Role        = "search-head"
