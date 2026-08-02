@@ -1,86 +1,46 @@
 #!/bin/bash
-set -e
+exec > >(tee /var/log/splunk-bootstrap.log) 2>&1
+set -x
 
 SPLUNK_VERSION="9.4.0"
 SPLUNK_BUILD="6b4ebe426ca6"
 SPLUNK_PACKAGE="splunk-${SPLUNK_VERSION}-${SPLUNK_BUILD}-linux-amd64.tgz"
 SPLUNK_URL="https://download.splunk.com/products/splunk/releases/${SPLUNK_VERSION}/linux/${SPLUNK_PACKAGE}"
 
-echo "===================================================="
-echo " Installing Splunk Enterprise"
-echo "===================================================="
-
 dnf install -y wget
 
-# Download only if not already present
-if [ ! -f "/tmp/${SPLUNK_PACKAGE}" ]; then
-    wget -O "/tmp/${SPLUNK_PACKAGE}" "${SPLUNK_URL}"
-fi
-
-# Create splunk user if it doesn't exist
 if ! id splunk >/dev/null 2>&1; then
-    useradd --system --create-home splunk
+    useradd --system --create-home --shell /bin/bash splunk
 fi
 
-# Install only if Splunk is not already installed
-if [ ! -d /opt/splunk ]; then
-    tar -xzf "/tmp/${SPLUNK_PACKAGE}" -C /opt
+# Find the unmounted data volume (nitro presents xvdb as nvme1n1)
+DEVICE=""
+for d in /dev/nvme1n1 /dev/xvdb /dev/sdb; do
+    if [ -b "$d" ] && ! blkid "$d" >/dev/null 2>&1; then
+        DEVICE="$d"
+        break
+    fi
+done
+
+if [ -n "$DEVICE" ]; then
+    mkfs.xfs -f "$DEVICE"
+    mkdir -p /opt/splunk
+    echo "$DEVICE /opt/splunk xfs defaults,nofail 0 2" >> /etc/fstab
+    mount /opt/splunk
 fi
 
-rm -f "/tmp/${SPLUNK_PACKAGE}"
+df -h /opt/splunk
+
+# Stream extraction: never writes the tarball to disk
+wget -qO- "${SPLUNK_URL}" | tar -xzf - -C /opt --no-same-owner --strip-components=1 -C /opt/splunk
 
 chown -R splunk:splunk /opt/splunk
 
-echo "===================================================="
-echo " Starting Splunk for first-time setup"
-echo "===================================================="
+sudo -u splunk /opt/splunk/bin/splunk start \
+    --accept-license --answer-yes --no-prompt --seed-passwd 'Pa55word'
 
-runuser -l splunk -c "/opt/splunk/bin/splunk start \
-    --accept-license \
-    --answer-yes \
-    --no-prompt \
-    --seed-passwd Pa55word"
-
-echo "===================================================="
-echo " Enabling Boot Start"
-echo "===================================================="
-
-/opt/splunk/bin/splunk enable boot-start \
-    -user splunk \
-    --accept-license \
-    --answer-yes \
-    --no-prompt
+/opt/splunk/bin/splunk enable boot-start -user splunk -systemd-managed 1 \
+    --accept-license --answer-yes --no-prompt
 
 systemctl daemon-reload
-systemctl enable Splunkd
-
-echo "===================================================="
-echo " Restarting Splunk using systemd"
-echo "===================================================="
-
-runuser -l splunk -c "/opt/splunk/bin/splunk stop"
-
-systemctl restart Splunkd
-
-echo "===================================================="
-echo " Waiting for Splunk to start"
-echo "===================================================="
-
-sleep 20
-
-systemctl status Splunkd --no-pager
-
-runuser -l splunk -c "/opt/splunk/bin/splunk status"
-
-echo "===================================================="
-echo " Splunk Installation Complete"
-echo "===================================================="
-
-echo "Splunk Enterprise"
-head -1 /opt/splunk/etc/splunk.version
-
-echo
-echo "Splunk has been installed and started successfully."
-echo "Web UI: https://$(hostname -I | awk '{print $1}'):8000"
-echo
-echo "HAPPY SPLUNKING!"
+sudo -u splunk /opt/splunk/bin/splunk status
