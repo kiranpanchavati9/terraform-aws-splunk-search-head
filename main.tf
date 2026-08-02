@@ -7,7 +7,7 @@ module "splunk_search_head" {
   key_name                             = var.key_name
   instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
   monitoring                           = var.monitoring
-  vpc_security_group_ids               = var.vpc_security_group_ids
+  vpc_security_group_ids               = [module.search_head_security_group.security_group_id]
   root_device_name                     = var.root_device_name
   root_volume_size                     = var.root_volume_size
   tags                                 = var.tags
@@ -23,6 +23,7 @@ module "splunk_search_head_autoscaling_group" {
 
   launch_template_id      = module.splunk_search_head.id
   launch_template_version = module.splunk_search_head.latest_version
+  target_group_arns       = [module.splunk_search_head_alb.target_group_arn]
 
   vpc_zone_identifier       = var.vpc_zone_identifier
   health_check_type         = var.health_check_type

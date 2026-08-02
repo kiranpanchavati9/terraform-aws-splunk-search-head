@@ -28,10 +28,6 @@ variable "monitoring" {
   type        = bool
 }
 
-variable "vpc_security_group_ids" {
-  description = "Security group IDs to attach"
-  type        = list(string)
-}
 
 variable "user_data" {
   description = "Base64-encoded user data script"

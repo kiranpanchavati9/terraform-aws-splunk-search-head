@@ -4,7 +4,6 @@ instance_type                        = "m5.large"
 key_name                             = "aws-helpag"
 instance_initiated_shutdown_behavior = "stop"
 monitoring                           = true
-vpc_security_group_ids               = ["sg-02d2ebc3b9af4f158"]
 user_data                            = ""
 iam_instance_profile                 = "SplunkSearchHead"
 root_device_name                     = "/dev/xvda"
