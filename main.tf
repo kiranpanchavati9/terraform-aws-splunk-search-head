@@ -35,3 +35,12 @@ module "splunk_search_head_iam" {
     iam_instance_profile = var.iam_instance_profile
     tags                 = var.tags
 }
+
+data "aws_subnet" "check" {
+  for_each = toset(var.vpc_zone_identifier)
+  id       = each.value
+}
+
+output "subnet_azs" {
+  value = { for k, v in data.aws_subnet.check : k => v.availability_zone }
+}
