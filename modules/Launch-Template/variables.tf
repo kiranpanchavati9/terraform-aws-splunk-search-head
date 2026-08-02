@@ -1,40 +1,66 @@
+variable "name" {
+  description = "Name prefix for the launch template and instances"
+  type        = string
+  default     = "splunk-search-head"
+}
+
 variable "image_id" {
-  description = "Image ID to use for the launch template"
+  description = "AMI ID for the search head"
   type        = string
 }
 
 variable "instance_type" {
-  description = "Instance type to use for the launch template"
+  description = "EC2 instance type"
   type        = string
 }
 
 variable "key_name" {
-  description = "Key name to use for the launch template"
+  description = "EC2 key pair name"
   type        = string
 }
 
 variable "instance_initiated_shutdown_behavior" {
-  description = "Instance initiated shutdown behavior to use for the launch template"
+  description = "Behaviour on in-guest shutdown: stop or terminate"
   type        = string
-}
-
-variable "availability_zones" {
-  description = "Availability zones to use for the launch template"
-  type        = list(string)
+  default     = "stop"
 }
 
 variable "monitoring" {
-  description = "Monitoring to use for the launch template"
+  description = "Enable detailed CloudWatch monitoring"
   type        = bool
+  default     = true
 }
 
 variable "vpc_security_group_ids" {
-  description = "VPC security group IDs to use for the launch template"
+  description = "Security group IDs to attach"
   type        = list(string)
 }
 
 variable "user_data" {
-  description = "User data to use for the launch template"
+  description = "Base64-encoded user data script"
   type        = string
 }
 
+variable "iam_instance_profile" {
+  description = "IAM instance profile name"
+  type        = string
+  default     = "SplunkSearchHead"
+}
+
+variable "root_device_name" {
+  description = "Root device name, /dev/xvda on Amazon Linux, /dev/sda1 on RHEL"
+  type        = string
+  default     = "/dev/xvda"
+}
+
+variable "root_volume_size" {
+  description = "Root volume size in GB"
+  type        = number
+  default     = 100
+}
+
+variable "tags" {
+  description = "Tags applied to instances and volumes"
+  type        = map(string)
+  default     = {}
+}
