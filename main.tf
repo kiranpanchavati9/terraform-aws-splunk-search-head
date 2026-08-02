@@ -48,3 +48,43 @@ data "aws_subnet" "check" {
 output "subnet_azs" {
   value = { for k, v in data.aws_subnet.check : k => v.availability_zone }
 }
+
+
+module "alb_security_group" {
+  source = "./modules/Security"
+
+  security_group_name        = "splunk-alb-sg"
+  security_group_description = "Splunk search head ALB"
+  vpc_id                     = var.vpc_id
+  ingress_ports              = [80]
+  ingress_cidrs              = var.allowed_cidrs
+  tags                       = var.tags
+}
+
+module "search_head_security_group" {
+  source = "./modules/Security"
+
+  security_group_name        = "splunk-search-head-sg"
+  security_group_description = "Splunk search heads"
+  vpc_id                     = var.vpc_id
+
+  ingress_ports = [22, 8089]
+  ingress_cidrs = var.admin_cidrs
+
+  ingress_ports_from_sg    = [8000]
+  source_security_group_id = module.alb_security_group.security_group_id
+
+  ingress_ports_self = [8191, 9887, 8089]
+
+  tags = var.tags
+}
+
+module "splunk_search_head_alb" {
+  source = "./modules/Application-Load-Balancer"
+
+  name              = var.name
+  vpc_id            = var.vpc_id
+  subnet_ids        = var.vpc_zone_identifier
+  security_group_id = module.alb_security_group.security_group_id
+  tags              = var.tags
+}

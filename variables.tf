@@ -58,6 +58,21 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "vpc_id" {
+  description = "VPC ID for the ALB, security groups, and search heads"
+  type        = string
+}
+
+variable "allowed_cidrs" {
+  description = "CIDRs allowed to reach the ALB listener"
+  type        = list(string)
+}
+
+variable "admin_cidrs" {
+  description = "CIDRs allowed for admin access to search heads (SSH/management)"
+  type        = list(string)
+}
+
 ## Auto-Scaling Group Variables
 
 variable "vpc_zone_identifier" {
